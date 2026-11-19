@@ -3,6 +3,21 @@
 .source "ArButton.java"
 
 
+.field private static final refs:Ljava/util/ArrayList;
+
+
+.method static constructor <clinit>()V
+    .locals 1
+
+    new-instance v0, Ljava/util/ArrayList;
+
+    invoke-direct {v0}, Ljava/util/ArrayList;-><init>()V
+
+    sput-object v0, Lapp/revanced/extension/youtube/patches/ArButton;->refs:Ljava/util/ArrayList;
+
+    return-void
+.end method
+
 .method public constructor <init>()V
     .locals 0
 
@@ -161,6 +176,8 @@
     move-result-object v0
 
     invoke-virtual {p0, v0}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    invoke-static {}, Lapp/revanced/extension/youtube/patches/ArButton;->refresh()V
 
     invoke-virtual {p0}, Landroid/view/View;->getRootView()Landroid/view/View;
 
@@ -477,5 +494,111 @@
     :catch_0
     move-exception v0
 
+    return-void
+.end method
+
+.method public static capture(Llil;)V
+    .locals 5
+
+    :try_start_0
+    sget-object v0, Lapp/revanced/extension/youtube/patches/ArButton;->refs:Ljava/util/ArrayList;
+
+    invoke-virtual {v0}, Ljava/util/ArrayList;->size()I
+
+    move-result v1
+
+    const/4 v2, 0x0
+
+    :cond_loop
+    if-ge v2, v1, :cond_add
+
+    invoke-virtual {v0, v2}, Ljava/util/ArrayList;->get(I)Ljava/lang/Object;
+
+    move-result-object v3
+
+    check-cast v3, Ljava/lang/ref/WeakReference;
+
+    invoke-virtual {v3}, Ljava/lang/ref/WeakReference;->get()Ljava/lang/Object;
+
+    move-result-object v3
+
+    if-eq v3, p0, :cond_done
+
+    add-int/lit8 v2, v2, 0x1
+
+    goto :cond_loop
+
+    :cond_add
+    const/16 v2, 0x10
+
+    if-le v1, v2, :cond_new
+
+    invoke-virtual {v0}, Ljava/util/ArrayList;->clear()V
+
+    :cond_new
+    new-instance v2, Ljava/lang/ref/WeakReference;
+
+    invoke-direct {v2, p0}, Ljava/lang/ref/WeakReference;-><init>(Ljava/lang/Object;)V
+
+    invoke-virtual {v0, v2}, Ljava/util/ArrayList;->add(Ljava/lang/Object;)Z
+
+    :cond_done
+    return-void
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catch_0
+
+    :catch_0
+    move-exception v0
+
+    return-void
+.end method
+
+.method public static refresh()V
+    .locals 5
+
+    sget-object v0, Lapp/revanced/extension/youtube/patches/ArButton;->refs:Ljava/util/ArrayList;
+
+    invoke-virtual {v0}, Ljava/util/ArrayList;->size()I
+
+    move-result v1
+
+    const/4 v2, 0x0
+
+    :cond_loop
+    if-ge v2, v1, :cond_end
+
+    :try_start_0
+    invoke-virtual {v0, v2}, Ljava/util/ArrayList;->get(I)Ljava/lang/Object;
+
+    move-result-object v3
+
+    check-cast v3, Ljava/lang/ref/WeakReference;
+
+    invoke-virtual {v3}, Ljava/lang/ref/WeakReference;->get()Ljava/lang/Object;
+
+    move-result-object v3
+
+    check-cast v3, Llil;
+
+    if-eqz v3, :cond_next
+
+    const/4 v4, 0x1
+
+    invoke-virtual {v3, v4}, Llil;->t(Z)V
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catch_0
+
+    :cond_next
+    :goto_next
+    add-int/lit8 v2, v2, 0x1
+
+    goto :cond_loop
+
+    :catch_0
+    move-exception v3
+
+    goto :goto_next
+
+    :cond_end
     return-void
 .end method

@@ -3209,6 +3209,8 @@
     .line 17
     iput p1, p0, Llil;->as:F
 
+    invoke-static {p0}, Lapp/revanced/extension/youtube/patches/ArButton;->capture(Llil;)V
+
     .line 18
     .line 19
     iget-object p2, p0, Llil;->g:Llii;
