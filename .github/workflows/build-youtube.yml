@@ -1,0 +1,53 @@
+name: Build YouTube ReVanced (AR button)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ar-button]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Extract the original APK
+        run: |
+          which 7z || sudo apt-get install -y p7zip-full
+          7z x base.7z.001 -oext > /dev/null
+          ls ext | head
+
+      - name: Get apktool
+        run: curl -sSL -o apktool.jar https://github.com/iBotPeaches/Apktool/releases/download/v2.11.1/apktool_2.11.1.jar
+
+      - name: Disassemble dex
+        run: |
+          (cd ext && zip -q ../dex_only.apk classes*.dex)
+          java -Xmx6g -jar apktool.jar d -r -f -o out dex_only.apk
+
+      - name: Apply patch
+        run: |
+          cp -r patch/overlay/. out/
+          while read f; do rm -f "out/$f"; done < patch/delete.txt
+
+      - name: Rebuild dex
+        run: |
+          java -Xmx6g -jar apktool.jar b -f -o rebuilt.apk out
+          mkdir newdex && (cd newdex && unzip -q ../rebuilt.apk 'classes*.dex')
+
+      - name: Settings screen entry and final APK
+        run: |
+          python3 patch/axml_edit.py ext/res/xml/revanced_prefs.xml prefs_new.xml
+          python3 patch/build_apk.py ext newdex prefs_new.xml base.apk
+          ls -la base.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: YouTube-ReVanced-AR-apk
+          path: base.apk
+          compression-level: 9
