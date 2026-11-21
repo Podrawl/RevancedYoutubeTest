@@ -60,7 +60,7 @@ jobs:
           print('patched tint alpha:', m)
           assert m==1
           a,d1=re.subn(r'(\.method public final draw\(Landroid/graphics/Canvas;\)V\n\s*\.locals \d+\n)', lambda x: x.group(1)+'    sget v0, Lapp/revanced/extension/youtube/patches/Dbg;->n:I\n    add-int/lit8 v0, v0, 0x1\n    sput v0, Lapp/revanced/extension/youtube/patches/Dbg;->n:I\n', a, count=1)
-          a,d2=re.subn(r'(invoke-virtual \{p1\}, Landroid/graphics/Canvas;->isHardwareAccelerated\(\)Z\n\s*move-result v0\n)', lambda x: x.group(1)+'    sput-boolean v0, Lapp/revanced/extension/youtube/patches/Dbg;->h:Z\n', a, count=1)
+          a,d2=re.subn(r'(Landroid/graphics/Canvas;->isHardwareAccelerated\(\)Z\n(?:(?!move-result)[\s\S])*?move-result v0\n)', lambda x: x.group(1)+'    sput-boolean v0, Lapp/revanced/extension/youtube/patches/Dbg;->h:Z\n', a, count=1)
           print('patched akhu counters:', d1, d2)
           assert d1==1 and d2==1
           open(g,'w').write(a)
