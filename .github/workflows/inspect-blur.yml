@@ -23,11 +23,9 @@ jobs:
           F=out/smali_classes8/com/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar.smali
           C='grep -v "^ *\.line\|^$\|^ *\.local\|^ *\.prologue"'
           {
-          echo "=== akhu 80-260"; sed -n 80,260p out/smali_classes5/akhu.smali | eval $C
-          echo "=== nwr.j start"; sed -n 3967,3990p out/smali_classes2/nwr.smali | eval $C
-          echo "=== PivotBar q uses"; grep -n "PivotBar;->q:Z\|PivotBar;->o:Lakhu" $F
-          echo "=== bdxo fe/ff/fg"; grep -n "fe()D\|ff()D\|fg()J" out/smali_classes*/bdxo.smali | head -5
-          echo "=== lachk s"; grep -n "method public.* s(JZ)Z" -A25 out/smali_classes*/achk.smali | eval $C | head -50
+          echo "=== akhu draw"; sed -n 315,480p out/smali_classes5/akhu.smali | eval $C
+          echo "=== PivotBar 1400-1475"; sed -n 1395,1476p $F | eval $C
+          echo "=== method name at 1473"; awk 'NR<1473 && /^\.method/ {l=NR": "$0} END{print l}' $F
           } > res/report.txt 2>&1
           cat res/report.txt
       - uses: actions/upload-artifact@v4
