@@ -21,8 +21,10 @@ jobs:
         run: |
           mkdir -p res
           C='grep -v "^ *\.line\|^$\|^ *\.local\|^ *\.prologue"'
+          F=$(find out -name 'nwp.smali' | head -1)
           {
-          echo "=== nwg run 1180-1350"; sed -n 1180,1350p out/smali_classes8/nwg.smali | eval $C
+          echo "=== $F"; eval $C < $F | head -150
+          echo "=== qzd.V"; f2=$(find out -name 'qzd.smali'|head -1); grep -n "method public static V(Lzcj;)Z" -A40 $f2 | eval $C | head -50
           } > res/report.txt 2>&1
           cat res/report.txt
       - uses: actions/upload-artifact@v4
