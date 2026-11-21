@@ -53,6 +53,13 @@ jobs:
           print('patched tint alpha:', m)
           assert m==1
           open(g,'w').write(a)
+          h='out/smali_classes2/nwr.smali'
+          b=open(h).read()
+          pat3=re.compile(r'(const-wide/32 v3, 0x2b861fa\n(?:(?!move-result v3)[\s\S])*?move-result v3\n)')
+          b,k=pat3.subn(lambda x: x.group(1)+'    const/4 v3, 0x1\n', b, count=1)
+          print('patched blur source view flag:', k)
+          assert k==1
+          open(h,'w').write(b)
           PY
 
       - name: Rebuild dex
