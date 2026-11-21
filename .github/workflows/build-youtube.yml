@@ -48,10 +48,6 @@ jobs:
           t,z=re.subn(r'^\.field [a-z ]*\bq:Z', '.field public q:Z', t, flags=re.M)
           assert z==1
           t,y=re.subn(r'^([ \t]*)const v0, 0x7f150352\n', lambda m: m.group(0), t, flags=re.M)
-          pat4=re.compile(r'^([ \t]*)invoke-virtual \{p0, v0, v1, v1\}, Lcom/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar;->k\(IZZ\)V$', re.M)
-          t,w=pat4.subn(lambda m: m.group(0)+'\n    invoke-static {p0}, Lapp/revanced/extension/youtube/patches/Dbg;->hook(Lcom/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar;)V', t)
-          print('patched dbg hook:', w)
-          assert w==1
           open(f,'w').write(t)
           g='out/smali_classes5/akhu.smali'
           a=open(g).read()
@@ -71,6 +67,13 @@ jobs:
           print('patched blur source view flag:', k)
           assert k==1
           open(h,'w').write(b)
+          nw='out/smali_classes8/nwg.smali'
+          c=open(nw).read()
+          pat5=re.compile(r'(NavigationButtonsPatch;->useTranslucentNavigationButtons\(Z\)Z\n(?:(?!move-result)[\s\S])*?move-result v1\n)')
+          c,q2=pat5.subn(lambda x: x.group(1)+'    const/4 v1, 0x1\n', c, count=1)
+          print('patched translucent nav gate:', q2)
+          assert q2==1
+          open(nw,'w').write(c)
           PY
 
       - name: Rebuild dex
