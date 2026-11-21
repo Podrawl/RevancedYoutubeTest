@@ -21,14 +21,13 @@ jobs:
         run: |
           mkdir -p res
           {
-          echo "== versionName"; (cd ext && ls; ) | head -50
-          echo "== RenderEffect / createBlurEffect / BlurMaskFilter / blur radius users"
-          grep -rlE "createBlurEffect|setBackgroundBlurRadius|setRenderEffect|setBlurBehindRadius" out | head -60
-          echo "== strings containing blur"
-          grep -rhoiE '"[^"]*blur[^"]*"' out | sort -u | head -80
-          echo "== class names containing blur"
-          find out -iname '*blur*' | head -40
+          echo "== outline"; grep -n "createBlurEffect\|setRenderEffect\|setBackgroundBlurRadius\|setBlurBehindRadius" out/smali_classes2/a\$\$ExternalSyntheticApiModelOutline7.smali | head
+          echo "== callers"; grep -rl 'ApiModelOutline7' out | head
+          echo "== RenderEffect refs"; grep -rl "Landroid/graphics/RenderEffect;" out | head -20
+          echo "== backdrop/blur resources"; grep -rhoiE 'blur[a-z_0-9]*' ext/res/values* 2>/dev/null | sort -u | head; grep -aoiE 'blur[a-z_0-9]*' ext/resources.arsc | sort -u | head -30
+          echo "== bottom bar blur/translucent"; grep -rhoiE '"[^"]*(translucent|frosted|glass|backdrop)[^"]*"' out | sort -u | head -40
+          echo "== nav bar flags"; grep -rhoE '"[A-Za-z_.]*(pivot|bottom_bar|nav_bar)[A-Za-z_.]*"' out | sort -u | head -60
           } > res/report.txt 2>&1
-          cat res/report.txt | head -200
+          cat res/report.txt
       - uses: actions/upload-artifact@v4
         with: { name: blur-report, path: res/report.txt }
