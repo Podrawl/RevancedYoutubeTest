@@ -21,11 +21,13 @@ jobs:
         run: |
           mkdir -p res
           F=out/smali_classes8/com/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar.smali
+          C='grep -v "^ *\.line\|^$\|^ *\.local\|^ *\.prologue"'
           {
-          echo "=== nwr method start"; awk 'NR<3985 && /^\.method/ {l=NR": "$0} END{print l}' out/smali_classes2/nwr.smali
-          echo "=== nwr after akhu"; sed -n 4056,4320p out/smali_classes2/nwr.smali | grep -v "^ *\.line\|^$"
-          echo "=== PivotBar o uses"; sed -n 1465,1540p $F | grep -v "^ *\.line\|^$"
-          echo "=== other flag users"; grep -rn "0x2b87125\|0x2b861fa" out | cut -c1-200 | head
+          echo "=== akhu 80-260"; sed -n 80,260p out/smali_classes5/akhu.smali | eval $C
+          echo "=== nwr.j start"; sed -n 3967,3990p out/smali_classes2/nwr.smali | eval $C
+          echo "=== PivotBar q uses"; grep -n "PivotBar;->q:Z\|PivotBar;->o:Lakhu" $F
+          echo "=== bdxo fe/ff/fg"; grep -n "fe()D\|ff()D\|fg()J" out/smali_classes*/bdxo.smali | head -5
+          echo "=== lachk s"; grep -n "method public.* s(JZ)Z" -A25 out/smali_classes*/achk.smali | eval $C | head -50
           } > res/report.txt 2>&1
           cat res/report.txt
       - uses: actions/upload-artifact@v4
