@@ -35,55 +35,41 @@ jobs:
           cp -r patch/overlay/. out/
           while read f; do rm -f "out/$f"; done < patch/delete.txt
 
-      - name: Force pivot bar blur
+      - name: Pivot bar blur (nav gate only) plus diagnostics
         run: |
           python3 - <<'PY'
           import re
+          P='Lapp/revanced/extension/youtube/patches/Dbg;'
           f='out/smali_classes8/com/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar.smali'
           t=open(f).read()
-          pat=re.compile(r'^([ \t]*)iput-boolean (\w+), p0, Lcom/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar;->q:Z$', re.M)
-          t,n=pat.subn(lambda m: m.group(1)+'const/4 '+m.group(2)+', 0x1\n'+m.group(0), t)
-          print('patched q writes:', n)
-          assert n>=1
           t,z=re.subn(r'^\.field [a-z ]*\bq:Z', '.field public q:Z', t, flags=re.M)
           assert z==1
-          t,y=re.subn(r'^([ \t]*)const v0, 0x7f150352\n', lambda m: m.group(0), t, flags=re.M)
+          pat=re.compile(r'^([ \t]*)invoke-virtual \{p0, v0, v1, v1\}, Lcom/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar;->k\(IZZ\)V$', re.M)
+          t,w=pat.subn(lambda m: m.group(0)+'\n    invoke-static {p0}, '+P+'->hook(Lcom/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar;)V', t)
+          print('diag hook in PivotBar:', w)
+          assert w==1
           open(f,'w').write(t)
           g='out/smali_classes5/akhu.smali'
           a=open(g).read()
-          pat2=re.compile(r'^([ \t]*)iput p1, p0, Lakhu;->f:I$', re.M)
-          a,m=pat2.subn(lambda x: x.group(1)+'const/16 p1, 0x50\n'+x.group(0), a)
-          print('patched tint alpha:', m)
-          assert m==1
-          a,d1=re.subn(r'(\.method public final draw\(Landroid/graphics/Canvas;\)V\n\s*\.locals \d+\n)', lambda x: x.group(1)+'    sget v0, Lapp/revanced/extension/youtube/patches/Dbg;->n:I\n    add-int/lit8 v0, v0, 0x1\n    sput v0, Lapp/revanced/extension/youtube/patches/Dbg;->n:I\n', a, count=1)
-          a,d2=re.subn(r'(Landroid/graphics/Canvas;->isHardwareAccelerated\(\)Z\n(?:(?!move-result)[\s\S])*?move-result v0\n)', lambda x: x.group(1)+'    sput-boolean v0, Lapp/revanced/extension/youtube/patches/Dbg;->h:Z\n', a, count=1)
-          print('patched akhu counters:', d1, d2)
-          assert d1==1 and d2==1
-          a,e1=re.subn(r'^\.field private final b:Landroid/view/View;', '.field public final b:Landroid/view/View;', a, flags=re.M)
-          a,e2=re.subn(r'^([ \t]*)iput v0, p0, Lakhu;->d:F$', lambda x: x.group(1)+'const/high16 v0, 0x41a00000\n'+x.group(0), a, count=1, flags=re.M)
-          a,e3=re.subn(r'^([ \t]*)iput p1, p0, Lakhu;->f:I$', lambda x: x.group(0)+'\n    invoke-static {p0}, Lapp/revanced/extension/youtube/patches/BlurSync;->attach(Lakhu;)V', a, count=1, flags=re.M)
-          mm=re.search(r'\.method public final draw\(Landroid/graphics/Canvas;\)V[\s\S]*?\.end method', a)
-          body=mm.group(0)
-          body2,e4=re.subn(r'^([ \t]*)iget v2, p0, Lakhu;->a:I$', lambda x: x.group(1)+'invoke-static {p0}, Lapp/revanced/extension/youtube/patches/BlurSync;->off(Lakhu;)I\n'+x.group(1)+'move-result v2', body, count=1, flags=re.M)
-          a=a.replace(body, body2)
-          print('patched live offset:', e4)
-          assert e4==1
-          print('patched blur radius/sync:', e1, e2, e3)
-          assert e1==1 and e2==1 and e3==1
-          open(g,'w').write(a)
+          a,d1=re.subn(r'(\.method public final draw\(Landroid/graphics/Canvas;\)V\n\s*\.locals \d+\n)', lambda x: x.group(1)+'    sget v0, '+P+'->n:I\n    add-int/lit8 v0, v0, 0x1\n    sput v0, '+P+'->n:I\n', a, count=1)
+          a,d2=re.subn(r'(Landroid/graphics/Canvas;->isHardwareAccelerated\(\)Z\n(?:(?!move-result)[\s\S])*?move-result v0\n)', lambda x: x.group(1)+'    sput-boolean v0, '+P+'->h:Z\n', a, count=1)
+          a,e1=re.subn(r'^\.field private final ([bdef]):', r'.field public final \1:', a, flags=re.M)
+          a,e3=re.subn(r'^([ \t]*)iput p1, p0, Lakhu;->f:I$', lambda x: x.group(0)+'\n    invoke-static {p0}, '+P+'->ak(Lakhu;)V', a, count=1, flags=re.M)
+          print('akhu diag:', d1, d2, e1, e3)
+          assert d1==1 and d2==1 and e1==4 and e3==1
           open(g,'w').write(a)
           h='out/smali_classes2/nwr.smali'
           b=open(h).read()
-          pat3=re.compile(r'(const-wide/32 v3, 0x2b861fa\n(?:(?!move-result v3)[\s\S])*?move-result v3\n)')
-          b,k=pat3.subn(lambda x: x.group(1)+'    const/4 v3, 0x1\n', b, count=1)
-          print('patched blur source view flag:', k)
+          pat3=re.compile(r'(iget-object v2, p0, Lnwr;->bI:Lbdxo;\n(?:(?!const-wide/32 v3, 0x2b861fa)[\s\S]){0,120}?const-wide/32 v3, 0x2b861fa)')
+          b,k=pat3.subn(lambda x: 'iget-object v2, p0, Lnwr;->bI:Lbdxo;\n    invoke-static {v2}, '+P+'->cfg(Lbdxo;)V\n'+x.group(1)[len('iget-object v2, p0, Lnwr;->bI:Lbdxo;\n'):], b, count=1)
+          print('cfg hook in nwr.j:', k)
           assert k==1
           open(h,'w').write(b)
           nw='out/smali_classes8/nwg.smali'
           c=open(nw).read()
           pat5=re.compile(r'(NavigationButtonsPatch;->useTranslucentNavigationButtons\(Z\)Z\n(?:(?!move-result)[\s\S])*?move-result v1\n)')
-          c,q2=pat5.subn(lambda x: x.group(1)+'    const/4 v1, 0x1\n', c, count=1)
-          print('patched translucent nav gate:', q2)
+          c,q2=pat5.subn(lambda x: x.group(1)+'    invoke-static {v1}, '+P+'->nav(Z)V\n    const/4 v1, 0x1\n', c, count=1)
+          print('translucent nav gate:', q2)
           assert q2==1
           open(nw,'w').write(c)
           PY
