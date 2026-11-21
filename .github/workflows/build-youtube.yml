@@ -52,13 +52,19 @@ jobs:
           g='out/smali_classes5/akhu.smali'
           a=open(g).read()
           pat2=re.compile(r'^([ \t]*)iput p1, p0, Lakhu;->f:I$', re.M)
-          a,m=pat2.subn(lambda x: x.group(1)+'const/16 p1, 0x78\n'+x.group(0), a)
+          a,m=pat2.subn(lambda x: x.group(1)+'const/16 p1, 0x50\n'+x.group(0), a)
           print('patched tint alpha:', m)
           assert m==1
           a,d1=re.subn(r'(\.method public final draw\(Landroid/graphics/Canvas;\)V\n\s*\.locals \d+\n)', lambda x: x.group(1)+'    sget v0, Lapp/revanced/extension/youtube/patches/Dbg;->n:I\n    add-int/lit8 v0, v0, 0x1\n    sput v0, Lapp/revanced/extension/youtube/patches/Dbg;->n:I\n', a, count=1)
           a,d2=re.subn(r'(Landroid/graphics/Canvas;->isHardwareAccelerated\(\)Z\n(?:(?!move-result)[\s\S])*?move-result v0\n)', lambda x: x.group(1)+'    sput-boolean v0, Lapp/revanced/extension/youtube/patches/Dbg;->h:Z\n', a, count=1)
           print('patched akhu counters:', d1, d2)
           assert d1==1 and d2==1
+          a,e1=re.subn(r'^\.field private final b:Landroid/view/View;', '.field public final b:Landroid/view/View;', a, flags=re.M)
+          a,e2=re.subn(r'^([ \t]*)iput v0, p0, Lakhu;->d:F$', lambda x: x.group(1)+'const/high16 v0, 0x41a00000\n'+x.group(0), a, count=1, flags=re.M)
+          a,e3=re.subn(r'^([ \t]*)iput p1, p0, Lakhu;->f:I$', lambda x: x.group(0)+'\n    invoke-static {p0}, Lapp/revanced/extension/youtube/patches/BlurSync;->attach(Lakhu;)V', a, count=1, flags=re.M)
+          print('patched blur radius/sync:', e1, e2, e3)
+          assert e1==1 and e2==1 and e3==1
+          open(g,'w').write(a)
           open(g,'w').write(a)
           h='out/smali_classes2/nwr.smali'
           b=open(h).read()
