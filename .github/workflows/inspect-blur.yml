@@ -22,10 +22,7 @@ jobs:
           mkdir -p res
           C='grep -v "^ *\.line\|^$\|^ *\.local\|^ *\.prologue"'
           {
-          echo "=== nps 925-975"; sed -n 925,975p out/smali_classes4/nps.smali | eval $C
-          echo "=== nwg 1300-1350"; sed -n 1300,1350p out/smali_classes8/nwg.smali | eval $C
-          echo "=== nps method"; awk 'NR<970 && /^\.method/ {l=NR": "$0} END{print l}' out/smali_classes4/nps.smali
-          echo "=== nwg method"; awk 'NR<1345 && /^\.method/ {l=NR": "$0} END{print l}' out/smali_classes8/nwg.smali
+          echo "=== nwg run 1180-1350"; sed -n 1180,1350p out/smali_classes8/nwg.smali | eval $C
           } > res/report.txt 2>&1
           cat res/report.txt
       - uses: actions/upload-artifact@v4
