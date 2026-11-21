@@ -46,6 +46,13 @@ jobs:
           print('patched q writes:', n)
           assert n>=1
           open(f,'w').write(t)
+          g='out/smali_classes5/akhu.smali'
+          a=open(g).read()
+          pat2=re.compile(r'^([ \t]*)iput p1, p0, Lakhu;->f:I$', re.M)
+          a,m=pat2.subn(lambda x: x.group(1)+'const/16 p1, 0x78\n'+x.group(0), a)
+          print('patched tint alpha:', m)
+          assert m==1
+          open(g,'w').write(a)
           PY
 
       - name: Rebuild dex
