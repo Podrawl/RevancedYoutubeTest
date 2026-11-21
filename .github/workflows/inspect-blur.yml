@@ -24,10 +24,10 @@ jobs:
           F=out/smali_classes8/$P.smali
           C='grep -v "^ *\.line\|^$\|^ *\.local\|^ *\.prologue"'
           {
-          echo "=== callers of k(IZZ)"; grep -rn "PivotBar;->k(IZZ)V" out | cut -c1-220
-          echo "=== setBackground in PivotBar"; grep -n "setBackground\|setBackgroundColor\|setBackgroundResource" $F | cut -c1-200
-          echo "=== callers of nwr.j"; grep -rn "Lnwr;->j()V" out | cut -c1-200
-          echo "=== isBarTranslucent users"; grep -rln "isBarTranslucent" out | head
+          echo "=== nyv"; sed -n 1,90p out/smali_classes2/nyv.smali | eval $C
+          echo "=== PivotBar 1300-1350"; sed -n 1300,1350p $F | eval $C
+          echo "=== PivotBar 225-250"; sed -n 225,250p $F | eval $C
+          echo "=== jup isBarTranslucent"; grep -n "isBarTranslucent" out/smali_classes4/jup.smali | head -5
           } > res/report.txt 2>&1
           cat res/report.txt
       - uses: actions/upload-artifact@v4
