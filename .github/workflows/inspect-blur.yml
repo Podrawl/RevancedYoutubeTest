@@ -20,9 +20,12 @@ jobs:
       - name: Grep
         run: |
           mkdir -p res
+          F=out/smali_classes8/com/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar.smali
           {
-          echo "=== akhu ctor"; sed -n 25,100p out/smali_classes5/akhu.smali
-          echo "=== nwr before akhu"; sed -n 3985,4056p out/smali_classes2/nwr.smali
+          echo "=== nwr method start"; awk 'NR<3985 && /^\.method/ {l=NR": "$0} END{print l}' out/smali_classes2/nwr.smali
+          echo "=== nwr after akhu"; sed -n 4056,4320p out/smali_classes2/nwr.smali | grep -v "^ *\.line\|^$"
+          echo "=== PivotBar o uses"; sed -n 1465,1540p $F | grep -v "^ *\.line\|^$"
+          echo "=== other flag users"; grep -rn "0x2b87125\|0x2b861fa" out | cut -c1-200 | head
           } > res/report.txt 2>&1
           cat res/report.txt
       - uses: actions/upload-artifact@v4
