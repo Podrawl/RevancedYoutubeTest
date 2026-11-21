@@ -20,12 +20,14 @@ jobs:
       - name: Grep
         run: |
           mkdir -p res
-          F=out/smali_classes8/com/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar.smali
+          P=com/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar
+          F=out/smali_classes8/$P.smali
           C='grep -v "^ *\.line\|^$\|^ *\.local\|^ *\.prologue"'
           {
-          echo "=== akhu draw"; sed -n 315,480p out/smali_classes5/akhu.smali | eval $C
-          echo "=== PivotBar 1400-1475"; sed -n 1395,1476p $F | eval $C
-          echo "=== method name at 1473"; awk 'NR<1473 && /^\.method/ {l=NR": "$0} END{print l}' $F
+          echo "=== callers of k(IZZ)"; grep -rn "PivotBar;->k(IZZ)V" out | cut -c1-220
+          echo "=== setBackground in PivotBar"; grep -n "setBackground\|setBackgroundColor\|setBackgroundResource" $F | cut -c1-200
+          echo "=== callers of nwr.j"; grep -rn "Lnwr;->j()V" out | cut -c1-200
+          echo "=== isBarTranslucent users"; grep -rln "isBarTranslucent" out | head
           } > res/report.txt 2>&1
           cat res/report.txt
       - uses: actions/upload-artifact@v4
