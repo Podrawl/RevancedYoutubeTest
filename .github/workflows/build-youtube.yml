@@ -35,6 +35,19 @@ jobs:
           cp -r patch/overlay/. out/
           while read f; do rm -f "out/$f"; done < patch/delete.txt
 
+      - name: Force pivot bar blur
+        run: |
+          python3 - <<'PY'
+          import re
+          f='out/smali_classes8/com/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar.smali'
+          t=open(f).read()
+          pat=re.compile(r'^([ \t]*)iput-boolean (\w+), p0, Lcom/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar;->q:Z$', re.M)
+          t,n=pat.subn(lambda m: m.group(1)+'const/4 '+m.group(2)+', 0x1\n'+m.group(0), t)
+          print('patched q writes:', n)
+          assert n>=1
+          open(f,'w').write(t)
+          PY
+
       - name: Rebuild dex
         run: |
           java -Xmx6g -jar apktool.jar b -f -o rebuilt.apk out
