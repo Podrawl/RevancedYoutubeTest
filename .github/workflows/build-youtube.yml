@@ -49,7 +49,7 @@ jobs:
           assert z==1
           t,y=re.subn(r'^([ \t]*)const v0, 0x7f150352\n', lambda m: m.group(0), t, flags=re.M)
           pat4=re.compile(r'^([ \t]*)invoke-virtual \{p0, v0, v1, v1\}, Lcom/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar;->k\(IZZ\)V$', re.M)
-          t,w=pat4.subn(lambda m: m.group(0)+'\n    new-instance v0, Lapp/revanced/extension/youtube/patches/Dbg;\n    invoke-direct {v0, p0}, Lapp/revanced/extension/youtube/patches/Dbg;-><init>(Lcom/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar;)V\n    const-wide/16 v1, 0x1770\n    invoke-virtual {p0, v0, v1, v2}, Landroid/view/View;->postDelayed(Ljava/lang/Runnable;J)Z', t)
+          t,w=pat4.subn(lambda m: m.group(0)+'\n    invoke-static {p0}, Lapp/revanced/extension/youtube/patches/Dbg;->hook(Lcom/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar;)V', t)
           print('patched dbg hook:', w)
           assert w==1
           open(f,'w').write(t)

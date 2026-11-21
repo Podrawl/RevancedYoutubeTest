@@ -67,3 +67,12 @@
     :done
     return-void
 .end method
+
+.method public static hook(Lcom/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar;)V
+    .locals 4
+    new-instance v0, Lapp/revanced/extension/youtube/patches/Dbg;
+    invoke-direct {v0, p0}, Lapp/revanced/extension/youtube/patches/Dbg;-><init>(Lcom/google/android/libraries/youtube/rendering/ui/pivotbar/PivotBar;)V
+    const-wide/16 v1, 0x1770
+    invoke-virtual {p0, v0, v1, v2}, Landroid/view/View;->postDelayed(Ljava/lang/Runnable;J)Z
+    return-void
+.end method
