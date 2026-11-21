@@ -21,12 +21,12 @@ jobs:
         run: |
           mkdir -p res
           {
-          echo "== outline"; grep -n "createBlurEffect\|setRenderEffect\|setBackgroundBlurRadius\|setBlurBehindRadius" out/smali_classes2/a\$\$ExternalSyntheticApiModelOutline7.smali | head
-          echo "== callers"; grep -rl 'ApiModelOutline7' out | head
-          echo "== RenderEffect refs"; grep -rl "Landroid/graphics/RenderEffect;" out | head -20
-          echo "== backdrop/blur resources"; grep -rhoiE 'blur[a-z_0-9]*' ext/res/values* 2>/dev/null | sort -u | head; grep -aoiE 'blur[a-z_0-9]*' ext/resources.arsc | sort -u | head -30
-          echo "== bottom bar blur/translucent"; grep -rhoiE '"[^"]*(translucent|frosted|glass|backdrop)[^"]*"' out | sort -u | head -40
-          echo "== nav bar flags"; grep -rhoE '"[A-Za-z_.]*(pivot|bottom_bar|nav_bar)[A-Za-z_.]*"' out | sort -u | head -60
+          f=out/smali_classes4/tgk.smali
+          echo "== tgk size"; wc -l $f; head -5 $f
+          echo "== methods"; grep -n "^.method\|^.field" $f | head -80
+          echo "== frosted"; grep -n "frostedGlass\|isBarTranslucent\|Build\$VERSION\|sget.*SDK_INT\|const/16 v[0-9]*, 0x1f\|0x1f$" $f | head -40
+          echo "== akhu"; grep -n "RenderEffect\|SDK_INT\|frosted" out/smali_classes5/akhu.smali | head
+          echo "== tgk users"; grep -rl "Ltgk;" out | head -20
           } > res/report.txt 2>&1
           cat res/report.txt
       - uses: actions/upload-artifact@v4
